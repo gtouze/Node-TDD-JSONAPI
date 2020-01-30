@@ -53,7 +53,7 @@ describe('POST /author', () => {
     const author = await db.Author.findOne({where: {
       id: response.body.id
     }})
-    expect(author.id).toBe(response.body.id)
+    expect(author._id).toBe(response.body.id)
     expect(author.firstName).toBe(data.firstName)
     expect(author.lastName).toBe(data.lastName)
   });

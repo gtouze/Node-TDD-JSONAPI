@@ -15,7 +15,8 @@ AuthorModel.create = async function(datas) {
      return author.save()
 }
 AuthorModel.findAll = async function(datas) {
-    return AuthorModel.find().select(datas.attributes).exec();
+    let attributs = datas ? datas.attributes : {};
+    return AuthorModel.find().select(attributs).exec();
 }
 
 module.exports = AuthorModel;
