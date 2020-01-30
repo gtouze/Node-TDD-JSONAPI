@@ -8,7 +8,7 @@ module.exports = (app, db) => {
 
   app.get('/authors', async (req, res) => {
     await db.Author.findAll(
-      {attributes: ['id', 'firstName', 'lastName']}
+      {attributes: ['_id', 'firstName', 'lastName']}
     ).then((result) => {
       return res.json(result)
     })

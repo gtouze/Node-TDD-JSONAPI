@@ -13,7 +13,7 @@ beforeAll(async () => {
 
 afterAll(async () => {
   await cleanDb(db)
-  await db.close()
+  await db.mongoose.connection.close()
 });
 
 describe('GET /', () => {

@@ -1,5 +1,8 @@
 const cleanDb = async (db) => {
-  await db.Author.truncate({ cascade: true });
-  await db.Post.truncate({ cascade: true });
+  try {
+    await db.Author.collection.drop();
+    await db.Post.collection.drop();
+  } catch (e) {
+  }
 }
 module.exports = cleanDb
