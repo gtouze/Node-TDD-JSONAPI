@@ -7,7 +7,11 @@ const PostSchema = new Schema({
     user: { type: Schema.ObjectId, ref: 'Author' },
 });
 
-
 const PostModel = mongoose.model('Post', PostSchema)
+
+PostModel.findAll = async function(datas) {
+    let attributs = datas ? datas.attributes : {};
+    return PostModel.find().select(attributs).exec();
+}
 
 module.exports = PostModel;
