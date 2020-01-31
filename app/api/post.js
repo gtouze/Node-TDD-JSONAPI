@@ -39,8 +39,8 @@ module.exports = (app, db) => {
             content: req.body.content,
             AuthorId: req.body.AuthorId,
         }).then((result) => {
-            let mongoResult = mongoToAPI(result)
-            res.json(mongoResult)
+            let mongoResult = result
+            res.json(result)
         })
     })
     app.get('/posts', async (req, res) => {

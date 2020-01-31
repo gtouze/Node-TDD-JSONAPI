@@ -145,8 +145,8 @@ describe('POST /post', () => {
     });
 
     test('It should return a json with the author\'s posts', async () => {
-      expect(response.body.data[0].attributes.title).toBe(data.title);
-      expect(response.body.data[0].attributes.content).toBe(data.content);
+      expect(response.body.title).toBe(data.title);
+      expect(response.body.content).toBe(data.content);
     });
 
     test('The post should belong to the selected authors\' posts', async () => {
