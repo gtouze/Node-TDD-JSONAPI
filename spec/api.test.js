@@ -50,10 +50,8 @@ describe('POST /author', () => {
     expect(response.body.lastName).toBe(data.lastName);
   });
   test('It should create and retrieve a post for the selected author', async () => {
-    const author = await db.Author.findOne({where: {
-      id: response.body.id
-    }})
-    expect(author._id).toBe(response.body.id)
+    const author = await db.Author.findById(response.body._id).exec()
+    expect(author._id.toString()).toBe(response.body._id)
     expect(author.firstName).toBe(data.firstName)
     expect(author.lastName).toBe(data.lastName)
   });
@@ -101,7 +99,7 @@ describe('GET /authors', () => {
       expect(response.body.length).toBe(5)
       for (i = 0; i < 5 ; i++) {
         const expectedBody = {
-          id: authors[i].id,
+          _id: authors[i]._id.toString(),
           firstName: authors[i].firstName,
           lastName: authors[i].lastName,
         }
@@ -140,7 +138,7 @@ describe('POST /post', () => {
       expect(postsInDatabase[0].title).toBe(post.title)
       expect(postsInDatabase[0].content).toBe(post.content)
     });
-    
+
     test('It should return a json with the author\'s posts', async () => {
       expect(response.body.title).toBe(data.title);
       expect(response.body.content).toBe(data.content);
