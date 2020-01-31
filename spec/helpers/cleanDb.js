@@ -1,7 +1,7 @@
 const cleanDb = async (db) => {
   try {
-    await db.Author.collection.drop();
-    await db.Post.collection.drop();
+    await db.Author.deleteMany({});
+    await db.Post.deleteMany({});
   } catch (e) {
   }
 }

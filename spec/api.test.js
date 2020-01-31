@@ -78,7 +78,8 @@ describe('GET /authors', () => {
       expect(response.statusCode).toBe(200);
     });
     test('It should return a json with a void array', async () => {
-      expect(response.body).toStrictEqual([]);
+      let authors = response.body.data;
+      expect(authors).toStrictEqual([]);
     });
   })
 
@@ -96,14 +97,18 @@ describe('GET /authors', () => {
       expect(response.statusCode).toBe(200)
     });
     test('It should return a json with a void array', async () => {
-      expect(response.body.length).toBe(5)
+      expect(response.body.data.length).toBe(5)
       for (i = 0; i < 5 ; i++) {
         const expectedBody = {
-          _id: authors[i]._id.toString(),
-          firstName: authors[i].firstName,
-          lastName: authors[i].lastName,
+          id: authors[i]._id.toString(),
+          type: "author",
+          attributes: {
+            firstName: authors[i].firstName,
+            lastName: authors[i].lastName
+          },
+          relationships: {posts: []}
         }
-        expect(response.body).toContainEqual(expectedBody)
+        expect(response.body.data).toContainEqual(expectedBody)
       }
     });
   })
@@ -140,8 +145,8 @@ describe('POST /post', () => {
     });
 
     test('It should return a json with the author\'s posts', async () => {
-      expect(response.body.title).toBe(data.title);
-      expect(response.body.content).toBe(data.content);
+      expect(response.body.data[0].attributes.title).toBe(data.title);
+      expect(response.body.data[0].attributes.content).toBe(data.content);
     });
 
     test('The post should belong to the selected authors\' posts', async () => {
@@ -151,4 +156,68 @@ describe('POST /post', () => {
       expect(posts[0].content).toBe(post.content)
     })
   })
+});
+
+describe('GET /post', () => {
+  let response
+  let posts
+
+  beforeAll(async () => await cleanDb(db))
+
+  describe('when there is no post in database', () => {
+    beforeAll(async () => {
+      response = await request(app).get('/posts', {include: "author" }).set('Accept', 'application/json');
+    })
+
+    test('It should not retrieve any post in db', async () => {
+      const post = await db.Post.findAll()
+      expect(post.length).toBe(0);
+    });
+    test('It should respond with a 200 status code', async () => {
+      expect(response.statusCode).toBe(200);
+    });
+    test('It should return a json with a void array', async () => {
+      let posts = response.body.data;
+      expect(posts).toStrictEqual([]);
+    });
+  });
+
+  describe('when there is one or more post in database', () => {
+    beforeAll(async () => {
+      await cleanDb(db)
+      posts = await factory.createMany('post', 5)
+      response = await request(app).get('/posts').set('Accept', 'application/json')
+    })
+
+    test('It should not retrieve any post in db', async () => {
+      const postsInDatabase = await db.Post.findAll()
+      expect(postsInDatabase.length).toBe(5)
+    });
+    test('It should respond with a 200 status code', async () => {
+      expect(response.statusCode).toBe(200)
+    });
+    test('It should return a json with authors', async () => {
+      let postsRcv = response.body.data;
+      expect(postsRcv.length).toBe(5)
+        const expectedBody2 = posts.map((post) => {
+        return {
+          id: post._id.toString(),
+          type: "post",
+          attributes: {
+          title: post.title,
+            content: post.content
+        },
+          relationships: {author: {data: {id: post.AuthorId.toString(), type: "author"}}}
+        }
+      })
+      expectedBody2.sort(function (a, b) {
+        return a.id > b.id;
+      });
+      postsRcv.sort(function (a, b) {
+        return a.id > b.id;
+      });
+      expect(postsRcv).toStrictEqual(expectedBody2)
+    });
+  })
+
 });

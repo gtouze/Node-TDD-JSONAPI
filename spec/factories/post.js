@@ -8,4 +8,5 @@ const Post = require('../../modelsMongo/post.js')
 factory.define('post', Post, {
   title: factory.sequence((n) => `title${n}`),
   content: factory.sequence((n) => `content${n}`),
+  AuthorId: factory.assoc('author', '_id')
 })
